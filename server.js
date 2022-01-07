@@ -2,18 +2,10 @@ const yargs = require('yargs')
 const fs = require('fs')
 
 
-
-const student = {
-    id: 2, //unique
-    name: 'mohamed',
-    grades: [10, 7, 8]
-}
-
-
 function readStudents() {
     try {
-        const students = JSON.parse(fs.readFileSync('students.json'))
-        return students
+        const student = JSON.parse(fs.readFileSync('students.json'))
+        return student
     } catch (error) {
         return []
     }
@@ -50,6 +42,10 @@ function addStudent(student) {
 
 }
 
+function getSingleStudent(id) {
+    const allStudents = readStudents()
+    return allStudents.filter((s) => s.id === id)
+}
 
 function deleteStudent(id) {
     const allStudents = readStudents()
@@ -58,81 +54,67 @@ function deleteStudent(id) {
 }
 
 
-// addStudent(student)
-// deleteStudent(student.id)
-
-const allStudents = readStudents()
-console.log('List of all Students:', allStudents);
-
-
-
-// To be pushed
-const studentafterProcessing = {
-    id: 1, //unique
-    name: 'Abdo',
-    grades: [10, 7, 8],
-    total: 10 + 7 + 8
-}
-
-
-// list (all students)
-// read  (by id)
+// add student
+yargs.command({
+    command: 'add',
+    describe: 'Add student',
+    builder: {
+        id: {
+            describe: 'Student id (number)',
+            demandOption: true,
+            type: 'number'
+        },
+        name: {
+            describe: 'Student name (string)',
+            demandOption: true,
+            type: 'string'
+        },
+        grades: {
+            describe: 'Student grades (array)',
+            demandOption: true,
+            type: 'array'
+        }
+    },
+    handler: (argv) => {
+        const student = { id: argv.id, name: argv.name, grades: JSON.parse(argv.grades) }
+        addStudent(student)
+    }
+})
 
 // delete (using id)
 yargs.command({
     command: 'delete',
     describe: 'Delete note',
     builder: {
-        title: {
+        id: {
             describe: 'This is title description in delete command',
             demandOption: true,
-            type: 'string'
+            type: 'number'
         }
     },
-    handler: deleteStudent
+    handler: (argv) => {
+        deleteStudent(argv.id)
+    }
 })
 
-// listAll
-yargs.command({
-    command: "list",
-    describe: 'List students',
-    handler: readStudents
-})
-
-
-// read
+// get student by id
 yargs.command({
     command: 'read',
-    describe: 'Read students',
-    builder: {
-        title: {
-            describe: 'This is title in read command',
-            demandOption: true,
-            type: 'string'
-        }
-    },
-    handler: readStudents
+    describe: 'get a single student by id',
+    handler: (argv) => {
+        console.log(getSingleStudent(argv.id))
+    }
 })
 
-// push
+// list all students
 yargs.command({
-    command: 'add',
-    describe: 'Add students',
+    command: 'listAll',
+    describe: 'List all students',
+    handler: (argv) => {
+        console.log(readStudents())
 
-    builder: {
-        title: {
-            describe: 'This is title description in add command',
-            demandOption: true,
-            type: 'string'
-        },
-        body: {
-            describe: 'This is body description in add command',
-            demandOption: true,
-            type: Object
-
-        }
-    },
-    handler: addStudent
+    }
 })
+
 
 yargs.parse()
