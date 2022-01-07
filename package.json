@@ -1,0 +1,14 @@
+{
+    "name": "practice",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "scripts": {
+        "dev": "node server.js --help"
+    },
+    "author": "Abdo khaled",
+    "license": "ISC",
+    "dependencies": {
+        "yargs": "^17.3.1"
+    }
+}
